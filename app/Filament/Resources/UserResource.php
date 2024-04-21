@@ -84,7 +84,7 @@ class UserResource extends Resource
                         ($livewire instanceof EditUser) ? 'New Password' : 'Password'
                     ),
                     Hidden::make('email_verified_at')
-                    ->disabled()
+
                     ->default(fn() => now()),
 
                     Hidden::make('is_admin')

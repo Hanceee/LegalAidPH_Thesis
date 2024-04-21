@@ -9,6 +9,7 @@ use Filament\Resources\Pages\ListRecords;
 class ListLawyers extends ListRecords
 {
     protected static string $resource = LawyersResource::class;
+    protected ?string $heading = "Lawyer List for Chatbot's Knowledge Base";
 
     protected function getHeaderActions(): array
     {
