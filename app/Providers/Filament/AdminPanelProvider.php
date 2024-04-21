@@ -17,16 +17,19 @@ use App\Filament\Pages\ChatDisplay;
 use App\Filament\Pages\Auth\Register;
 use Filament\Navigation\NavigationItem;
 use App\Filament\Pages\Auth\EditProfile;
-use App\Filament\Resources\ChatbotResource;
-use App\Filament\Resources\ConversationResource;
-use App\Filament\Resources\LawyerResource;
+use App\Filament\Resources\ChatbotConfigurationResource;
+use App\Filament\Resources\ChatResource;
 use App\Filament\Resources\UserResource;
 use Filament\Navigation\NavigationGroup;
+use App\Filament\Resources\LawyerResource;
 use Awcodes\LightSwitch\LightSwitchPlugin;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Navigation\NavigationBuilder;
+use App\Filament\Resources\ChatbotResource;
+use App\Filament\Resources\LawyersResource;
 use Hasnayeen\Themes\Http\Middleware\SetTheme;
 use Illuminate\Session\Middleware\StartSession;
+use App\Filament\Resources\ConversationResource;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
@@ -70,14 +73,15 @@ class AdminPanelProvider extends PanelProvider
                                 ->url(fn (): string => UserResource::getUrl())
                                 ->hidden(fn(): bool => !auth()->user()->is_admin),
                                 NavigationItem::make('Conversation')
-                                ->url(fn (): string => ConversationResource::getUrl())
+                                ->url(fn (): string => ChatResource::getUrl())
                                 ->hidden(fn(): bool => !auth()->user()->is_admin),
                                 NavigationItem::make('Lawyer')
-                                ->url(fn (): string => LawyerResource::getUrl())
+                                ->url(fn (): string => LawyersResource::getUrl())
                                 ->hidden(fn(): bool => !auth()->user()->is_admin),
                                 NavigationItem::make('Chatbot')
-                                ->url(fn (): string => ChatbotResource::getUrl())
-                                ->hidden(fn(): bool => !auth()->user()->is_admin),])
+                                ->url(fn (): string => ChatbotConfigurationResource::getUrl())
+                                ->hidden(fn(): bool => !auth()->user()->is_admin),
+                                ])
                             ->icon('heroicon-m-cog-8-tooth'),
                     ]);
             })

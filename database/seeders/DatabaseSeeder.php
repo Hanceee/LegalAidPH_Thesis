@@ -18,8 +18,11 @@ class DatabaseSeeder extends Seeder
         ]);
 
         \App\Models\User::factory()->create([
-            'name' => 'Hev Abi',
+            'name' => 'Hance Czedrick M. Abubo',
+            'username' => 'hunthance',
             'email' => 'hance.abubo27@gmail.com',
+            'email_verified_at' => now(),
+            'is_admin' => true,
             'password' => bcrypt('password'),
         ]);
     }
