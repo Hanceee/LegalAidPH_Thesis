@@ -12,6 +12,7 @@ use App\Models\ChatMessage;
 use Livewire\Attributes\Url;
 use OpenAI\Laravel\Facades\OpenAI;
 use Illuminate\Contracts\View\View;
+use App\Models\ChatbotConfiguration;
 use Illuminate\Support\Facades\Http;
 use Filament\Forms\Contracts\HasForms;
 use Illuminate\Contracts\View\Factory;
@@ -30,20 +31,11 @@ class ChatDisplay extends Component implements HasForms, HasTable
     public array $messages = [];
     #[Url]
     public $chatID = null;
-    // public string $suggestedMessage1 = 'Suggested Message 1';
-    // public string $suggestedMessage2 = 'Suggested Message 2';
-    // public string $suggestedMessage3 = 'Suggested Message 3';
-    // public string $suggestedMessage4 = 'Suggested Message 4';
-    // public string $suggestedMessage5 = 'Suggested Message 5';
-    // public string $suggestedMessage6 = 'Suggested Message 6';
-
     public string $suggestedMessage1 = '';
     public string $suggestedMessage2 = '';
     public string $suggestedMessage3 = '';
     public string $suggestedMessage4 = '';
-    // public string $suggestedMessage5 = '';
-    // public string $suggestedMessage6 = '';
-
+     public $latestUserMessageId;
     public string $newMessage = '';
     private ?Chat $chat;
     public $showFirstColumn = true;
@@ -51,6 +43,40 @@ class ChatDisplay extends Component implements HasForms, HasTable
     public $editingChat = null; // New property to store the ID of the chat being edited
     public $editChatName = ''; // New property to store the edited chat name
 
+    private function generateSuggestedMessages(): void
+    {
+        $prompts = [
+            "As the Chatbot User give a suggested message prompt to a Filipino family law lawyer chatbot named LegalAidPH in 20 words tagalog",
+            "As the Chatbot User give a suggested message prompt to a Filipino family law lawyer chatbot named LegalAidPH in 20 words",
+            "As the Chatbot User give a suggested message prompt to a Filipino family law lawyer chatbot named LegalAidPH in 20 words",
+            "As the Chatbot User give a suggested message prompt to a Filipino family law lawyer chatbot named LegalAidPH in 20 words in tagalog",
+        ];
+
+
+        foreach ($prompts as $index => $prompt) {
+            $result = OpenAI::chat()->create([
+                'model' => 'gpt-4-turbo',
+                'messages' => [
+                    ['role' => 'user', 'content' => $prompt],
+                ],
+            ]);
+
+            $suggestedMessage = $result['choices'][0]['message']['content'];
+
+            $suggestedMessage = str_replace('"', '', $suggestedMessage);
+
+
+            // Assign generated message to the corresponding property
+            $propertyName = "suggestedMessage" . ($index + 1);
+            $this->{$propertyName} = $suggestedMessage;
+
+               // Store suggested messages into chatbot_configurations table
+        $config = ChatbotConfiguration::firstOrCreate(['id' => 1]);
+        $config->{"message" . ($index + 1)} = $suggestedMessage;
+        $config->save();
+        }
+
+    }
 
     public function table(Table $table): Table
     {
@@ -104,7 +130,17 @@ class ChatDisplay extends Component implements HasForms, HasTable
             $this->loadChat();
         }
         // $this->generateSuggestedMessages();
+    // Generate suggested messages if they don't exist
+        $config = ChatbotConfiguration::firstOrCreate(['id' => 1]);
+        if (empty($config->message1) || empty($config->message2) || empty($config->message3) || empty($config->message4)) {
+            $this->generateSuggestedMessages();
+        }
 
+        // Fetch suggested messages from the database and assign them to public properties
+        $this->suggestedMessage1 = $config->message1;
+        $this->suggestedMessage2 = $config->message2;
+        $this->suggestedMessage3 = $config->message3;
+        $this->suggestedMessage4 = $config->message4;
 
 
     }
@@ -176,6 +212,33 @@ class ChatDisplay extends Component implements HasForms, HasTable
         $this->sendingMessage = false;
     }
 
+    public function editLatestUserMessage($id)
+    {
+
+        $message = ChatMessage::find($id);
+        $this->newMessage = $message->content;
+        $this->latestUserMessageId = $id;
+    }
+
+
+
+   public function regenerateLatestBotMessage($id)
+{
+
+    $message = ChatMessage::find($id);
+    $this->newMessage = $this->messages[count($this->messages) - 2]['content']; // Set the latest user message as the new message
+
+     // Delete the second to last message
+     $secondToLastMessageId = $this->messages[count($this->messages) - 2]['id'];
+     ChatMessage::destroy($secondToLastMessageId);
+
+    $message->delete();
+
+    $this->sendMessage();
+
+
+}
+
 public function startNewChat(): void
 {
     $this->chatID = null;
@@ -193,41 +256,6 @@ public function changeChat($chatID): void
     $this->loadChat();
 
 }
-
-private function generateSuggestedMessages(): void
-{
-
-
-
-    // Define the prompts
-    $prompts = [
-        "As the Chatbot User give a suggested message prompt to a Filipino family law lawyer chatbot named LegalAidPH in 20 words tagalog",
-        "As the Chatbot User give a suggested message prompt to a Filipino family law lawyer chatbot named LegalAidPH in 20 words",
-        "As the Chatbot User give a suggested message prompt to a Filipino family law lawyer chatbot named LegalAidPH in 20 words",
-        "As the Chatbot User give a suggested message prompt to a Filipino family law lawyer chatbot named LegalAidPH in 20 words in tagalog",
-    ];
-
-
-    foreach ($prompts as $index => $prompt) {
-        $result = OpenAI::chat()->create([
-            'model' => 'gpt-4-turbo',
-            'messages' => [
-                ['role' => 'user', 'content' => $prompt],
-            ],
-        ]);
-
-        $suggestedMessage = $result['choices'][0]['message']['content'];
-
-        $suggestedMessage = str_replace('"', '', $suggestedMessage);
-
-
-        // Assign generated message to the corresponding property
-        $propertyName = "suggestedMessage" . ($index + 1);
-        $this->{$propertyName} = $suggestedMessage;
-    }
-
-}
-
 
 private function loadChat(): void
 {

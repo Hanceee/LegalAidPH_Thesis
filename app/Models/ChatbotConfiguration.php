@@ -14,6 +14,11 @@ class ChatbotConfiguration extends Model
         'system_instruction',
         'model_name',
         'model_details',
-        'txt_file'
+        'txt_file',
+        'message1',
+        'message2',
+        'message3',
+        'message4',
+
     ];
 }

@@ -17,6 +17,7 @@ use App\Filament\Pages\ChatDisplay;
 use App\Filament\Pages\Auth\Register;
 use Filament\Navigation\NavigationItem;
 use App\Filament\Pages\Auth\EditProfile;
+use App\Filament\Pages\HomePage;
 use App\Filament\Resources\ChatbotConfigurationResource;
 use App\Filament\Resources\ChatResource;
 use App\Filament\Resources\UserResource;
@@ -58,17 +59,19 @@ class AdminPanelProvider extends PanelProvider
             ->navigation(function (NavigationBuilder $builder): NavigationBuilder {
                 return $builder
                     ->items([
-                        NavigationItem::make('Dashboard')
-                            ->icon('heroicon-o-home')
-                            ->isActiveWhen(fn (): bool => request()->routeIs('filament.admin.pages.dashboard'))
-                            ->url(fn (): string => Dashboard::getUrl())
-                            ->hidden(fn(): bool => !auth()->user()->is_admin),
 
+
+                        ...HomePage::getNavigationItems(),
                         ...ChatDisplay::getNavigationItems(),
+
                     ])
                     ->groups([
                         NavigationGroup::make('Admin Management')
                             ->items([
+                                NavigationItem::make('Dashboard')
+                                ->isActiveWhen(fn (): bool => request()->routeIs('filament.admin.pages.dashboard'))
+                                ->url(fn (): string => Dashboard::getUrl())
+                                ->hidden(fn(): bool => !auth()->user()->is_admin),
                                 NavigationItem::make('User')
                                 ->url(fn (): string => UserResource::getUrl())
                                 ->hidden(fn(): bool => !auth()->user()->is_admin),
@@ -108,7 +111,6 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login(Login::class)
             ->profile(EditProfile::class)
-
             ->registration(Register::class)
             ->passwordReset()
             ->emailVerification()

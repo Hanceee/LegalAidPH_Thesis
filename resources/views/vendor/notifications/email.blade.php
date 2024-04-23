@@ -40,7 +40,7 @@
 {{ $salutation }}
 @else
 @lang('Regards'),<br>
-@lang('LegalAidPH')
+{{ config('app.name') }}
 @endif
 
 {{-- Subcopy --}}

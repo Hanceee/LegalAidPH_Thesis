@@ -25,10 +25,10 @@ use App\Filament\Resources\UserResource\RelationManagers\UserRelationManager;
 class UserResource extends Resource
 {
     protected static ?string $model = User::class;
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery()->whereNotNull('email_verified_at');
-    }
+    // public static function getEloquentQuery(): Builder
+    // {
+    //     return parent::getEloquentQuery()->whereNotNull('email_verified_at');
+    // }
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function infolist(Infolist $infolist): Infolist
@@ -109,7 +109,8 @@ class UserResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email_verified_at')
                     ->dateTime()
-                    ->sortable(),
+                    ->sortable()
+                    ->placeholder('Not Verified.'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

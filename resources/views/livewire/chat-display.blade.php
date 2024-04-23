@@ -128,46 +128,59 @@
                     @endif
                 </h1>
 
+ <!-- Add space between header and messages -->
+ <div class="mb-8"></div>
 
-                <!-- Display messages -->
-                @forelse($messages as $message)
-                    <div class=" last-of-type:border-none py-4 flex items-right">
-                        <!-- Sender's avatar -->
-                        @if($message['sender'] === 'LegalAidPH')
-                            <img src="{{ asset('chat.png') }}" alt="LegalAidPH Logo" class=" w-8 h-8 rounded-full mr-4 ">
-                        @else
-                            @php
-                                // Split the sender's name into words
-                                $words = explode(' ', $message['sender']);
-                                // Initialize an empty string to store initials
-                                $initials = '';
-                                // Loop through each word
-                                foreach ($words as $word) {
-                                    // Append the first letter of each word to initials
-                                    $initials .= strtoupper(substr($word, 0, 1));
-                                }
-                                // Construct the URL for the avatar using the initials
-                                $avatarUrl = "https://ui-avatars.com/api/?name={$message['sender']}&background=random&color=ffffff&size=128&rounded=true&bold=true";
-                            @endphp
-                            <img src="{{ $avatarUrl }}" alt="User Avatar" class="w-8 h-8 rounded-full mr-4">
-                        @endif
-                        <!-- Message content -->
-                        <div>
-                            <h2 class="text-2xl dark:text-white">{{ $message['sender'] }}</h2>
-                            <p class="dark:text-white">
-                                {!! nl2br(e($message['content'])) !!}
-                            </p>
-                        </div>
-                    </div>
-                @empty
-                     <!-- Displayed when no messages -->
-                     <div class="py-20 text-center dark:text-white">
-                        <div class="flex items-center justify-center mb-4">
-                            <img src="{{ asset('chat.png') }}" alt="Logo" class="w-24 h-24 rounded-full">
-                        </div>
-                        <p class="text-xl font-semibold">Kumusta! Family law, dito tayo.</p>
-                    </div>
-                @endforelse
+                 <!-- Display messages -->
+    @forelse($messages as $key => $message)
+    <div class="last-of-type:border-none py-4 flex items-right">
+        <!-- Sender's avatar -->
+        @if($message['sender'] === 'LegalAidPH')
+            <img src="{{ asset('chat.png') }}" alt="LegalAidPH Logo" class="w-8 h-8 rounded-full mr-4">
+        @else
+            @php
+                $words = explode(' ', $message['sender']);
+                $initials = '';
+                foreach ($words as $word) {
+                    $initials .= strtoupper(substr($word, 0, 1));
+                }
+                $avatarUrl = "https://ui-avatars.com/api/?name={$message['sender']}&background=random&color=ffffff&size=128&rounded=true&bold=true";
+            @endphp
+            <img src="{{ $avatarUrl }}" alt="User Avatar" class="w-8 h-8 rounded-full mr-4">
+        @endif
+        <!-- Message content -->
+        <div>
+            <h2 class="text-2xl dark:text-white">{{ $message['sender'] }}</h2>
+            <p class="dark:text-white">
+                {!! nl2br(e($message['content'])) !!}
+            </p>
+            @if($message['sender'] === auth()->user()->name && $key === count($messages) - 2)
+                <!-- Edit button for user message -->
+                <button wire:click="editLatestUserMessage({{ $message['id'] }})" class="text-sm text-blue-500 hover:underline">Edit</button>
+            @elseif($message['sender'] === 'LegalAidPH' && $key === count($messages) - 1)
+                <!-- Regenerate button for chatbot message -->
+                <button wire:click="regenerateLatestBotMessage({{ $message['id'] }})" wire:loading.attr="disabled" class="text-sm text-blue-500 hover:underline relative">
+                    Regenerate
+                    <span wire:loading wire:target="regenerateLatestBotMessage({{ $message['id'] }})">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="animate-spin h-5 w-5 text-blue-500 ml-2" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647zM20 12c0-3.042-1.135-5.824-3-7.938l-3 2.647A7.962 7.962 0 0120 12h4zm-6 7.291c1.865-2.114 3-4.896 3-7.938h-4c0 1.576-.5 3.041-1.347 4.245l2.347 2.693z"></path>
+                        </svg>
+                    </span>
+                </button>
+            @endif
+        </div>
+    </div>
+@empty
+    <!-- Displayed when no messages -->
+    <div class="py-20 text-center dark:text-white">
+        <div class="flex items-center justify-center mb-4">
+            <img src="{{ asset('chat.png') }}" alt="Logo" class="w-24 h-24 rounded-full">
+        </div>
+        <p class="text-xl font-semibold">Kumusta! Family law, dito tayo.</p>
+    </div>
+@endforelse
+
             </div>
 
             <!-- Check if there are messages displayed -->
