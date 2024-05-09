@@ -27,7 +27,8 @@ class ChatDisplay extends Component implements HasForms, HasTable
 {
     use InteractsWithTable;
     use InteractsWithForms;
-
+    public $audioPlayers = [];
+    public $messageContent;
     public array $messages = [];
     #[Url]
     public $chatID = null;
@@ -42,6 +43,7 @@ class ChatDisplay extends Component implements HasForms, HasTable
     public bool $sendingMessage = false; // Add a property to track whether a message is being sent
     public $editingChat = null; // New property to store the ID of the chat being edited
     public $editChatName = ''; // New property to store the edited chat name
+    public $search = '';
 
     private function generateSuggestedMessages(): void
     {
@@ -150,67 +152,92 @@ class ChatDisplay extends Component implements HasForms, HasTable
         $chats = Chat::query()
             ->where('user_id', auth()->id())
             ->where('is_archived', false) // Exclude archived chats
+            ->when($this->search, function ($query) {
+                $query->where('name', 'like', '%'.$this->search.'%');
+            })
             ->latest()
             ->get();
-
+        // Check if there are no search results
+        if ($this->search && $chats->isEmpty()) {
+            session()->flash('noResults', true);
+        } else {
+            session()->forget('noResults');
+        }
 
         return view('livewire.chat-display')
             ->with('chats', $chats);
     }
 
-    public function sendMessage(): void
+    public function clearSearch()
     {
-
-        // Set sendingMessage to true when sending a message
-        $this->sendingMessage = true;
-
-
-        if (!$this->chatID) {
-            $this->createNewChat();
-        } else {
-            $this->loadChat();
-        }
-
-
-        // Store the user's message in the database
-        $this->chat->chatMessages()->create([
-            'sender' => auth()->user()->name,
-            'content' => $this->newMessage,
-        ]);
-
-         // Update the 'updated_at' timestamp of the chat
-         $this->chat->touch();
-
-
-        // Send the user's message and chat history to the API
-        $request = Http::timeout(60)->asJson()
-        // Hardcoded because it's easy :)
-            ->post('http://127.0.0.1:5000/api/chat_with_history', [
-                'query' => $this->newMessage,
-                'chat_history' => $this->messages,
-            ])
-            ->json();
-
-            if (str_starts_with($request['data']['answer'], 'Answer:')) {
-                $request['data']['answer'] = substr($request['data']['answer'], 7);
-            }
-
-            // Remove Markdown symbols
-            $request['data']['answer'] = str_replace(['*', '_', '~', '`'], '', $request['data']['answer']);
-
-
-            $this->chat->chatMessages()->create([
-                'sender' => 'LegalAidPH',
-                'content' => $request['data']['answer'],
-            ]);
-
-            $this->messages = $this->chat->chatMessages()->get()->toArray();
-
-            $this->newMessage = '';
-
-              // Set sendingMessage to false when the response is received
-        $this->sendingMessage = false;
+        $this->search = '';
     }
+
+   // Modify the search method to be triggered on search input change
+public function updatedSearch()
+{
+    $this->searchChats();
+}
+
+// Rename the searchChats method to handle the search functionality
+public function searchChats()
+{
+    // No need to do anything here, just re-render the component
+    $this->render();
+}
+
+    public function sendMessage(): void
+{
+    // Set sendingMessage to true when sending a message
+    $this->sendingMessage = true;
+
+    if (!$this->chatID) {
+        $this->createNewChat();
+    } else {
+        $this->loadChat();
+    }
+
+    // Store the user's message in the database
+    $this->chat->chatMessages()->create([
+        'sender' => auth()->user()->name,
+        'content' => $this->newMessage,
+    ]);
+
+    // Update the 'updated_at' timestamp of the chat
+    $this->chat->touch();
+
+    // Send the user's message and chat history to the API
+    $response = Http::asJson()->post('http://127.0.0.1:5000/api/chat_with_history', [
+        'query' => $this->newMessage,
+        'chat_history' => $this->messages,
+    ])->json();
+
+    $answer = $response['data']['answer'] ?? '';
+
+    // If the answer starts with 'Answer:', remove it
+    if (str_starts_with($answer, 'Answer:')) {
+        $answer = substr($answer, 7);
+    }
+
+    // Remove Markdown symbols
+    $answer = str_replace(['*', '_', '~', '`'], '', $answer);
+
+    // Store the AI's response in the database
+    $this->chat->chatMessages()->create([
+        'sender' => 'LegalAidPH',
+        'content' => $answer,
+    ]);
+
+    // Refresh messages
+    $this->messages = $this->chat->chatMessages()->get()->toArray();
+
+    // Reset new message input
+    $this->newMessage = '';
+
+    // Set sendingMessage to false when the response is received
+    $this->sendingMessage = false;
+}
+
 
     public function editLatestUserMessage($id)
     {
@@ -243,6 +270,7 @@ public function startNewChat(): void
 {
     $this->chatID = null;
     $this->messages = [];
+    $this->audioPlayers = [];
 
 }
 
@@ -252,6 +280,7 @@ public function changeChat($chatID): void
 
     // Reset the message input form
     $this->newMessage = '';
+    $this->audioPlayers = [];
 
     $this->loadChat();
 
@@ -358,5 +387,36 @@ private function createNewChat(): void
     // Save the edited chat name when clicking away from the input field
     $this->updateChat();
 }
+
+
+// Livewire component
+
+
+public function readAloud($content, $index)
+    {
+        if (!isset($this->audioPlayers[$index])) {
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
+                'Content-Type' => 'application/json',
+            ])->post('https://api.openai.com/v1/audio/speech', [
+                'model' => 'tts-1-hd',
+                'input' => $content,
+                'voice' => 'onyx',
+            ]);
+
+            if ($response->successful()) {
+                file_put_contents("speech_$index.mp3", $response->body());
+                $this->audioPlayers[$index] = "speech_$index.mp3";
+            } else {
+                // Handle error
+                $this->addError('speech_generation', 'Failed to generate speech.');
+            }
+        } else {
+            // Remove audio file and player if clicked again
+            unlink($this->audioPlayers[$index]);
+            unset($this->audioPlayers[$index]);
+        }
+    }
+
 
 }
