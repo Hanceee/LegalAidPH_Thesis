@@ -23,10 +23,13 @@ use function PHPSTORM_META\map;
 class ChatDisplay extends Page
 {
 
+
+
     protected static ?string $navigationIcon = 'heroicon-o-chat-bubble-bottom-center-text';
     protected static ?string $navigationLabel = 'LegalAidPH Chat';
     protected ?string $heading = 'Chat Display';
     protected static string $view = 'filament.pages.chat-display';
+
 
     protected function getHeaderActions(): array
 {
@@ -47,14 +50,16 @@ class ChatDisplay extends Page
                     ->requiresConfirmation()
                     ->icon('heroicon-o-archive-box-arrow-down')
                     ->action(function () {
-                        Chat::query()->update(['is_archived' => 1]);
+                        $user = auth()->user();
+                        Chat::where('user_id', $user->id)->update(['is_archived' => 1]);
                     }),
                 Action::make('Delete all chats')
                     ->requiresConfirmation()
                     ->color('danger')
                     ->icon('heroicon-o-trash')
                     ->action(function () {
-                        Chat::query()->delete();
+                        $user = auth()->user();
+                        Chat::where('user_id', $user->id)->delete();
                     }),
             ])
             ->label('Settings')

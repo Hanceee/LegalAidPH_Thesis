@@ -1,5 +1,6 @@
 <?php
 
+use App\Livewire\ChatDisplay;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -12,6 +13,7 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+Route::get('/audio-transcription', ChatDisplay::class);
 
 Route::get('/home-page', function () {
     return view('admin.home');

@@ -21,6 +21,7 @@ use App\Filament\Resources\UserResource\Pages\EditUser;
 use App\Filament\Resources\UserResource\Pages\CreateUser;
 use App\Filament\Resources\UserResource\RelationManagers;
 use App\Filament\Resources\UserResource\RelationManagers\UserRelationManager;
+use Filament\Forms\Components\TextInput;
 
 class UserResource extends Resource
 {
@@ -83,7 +84,7 @@ class UserResource extends Resource
                     )->label(static fn(PAge $livewire): string =>
                         ($livewire instanceof EditUser) ? 'New Password' : 'Password'
                     ),
-                    Hidden::make('email_verified_at')
+                    TextInput::make('email_verified_at')
 
                     ->default(fn() => now()),
 
@@ -123,21 +124,36 @@ class UserResource extends Resource
                 Tables\Columns\IconColumn::make('is_admin')
                     ->boolean(),
 
+
+
             ])
             ->filters([
-                //
+                Tables\Filters\TrashedFilter::make(),
+
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\ForceDeleteAction::make(),
+            Tables\Actions\RestoreAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\ForceDeleteBulkAction::make(),
+                Tables\Actions\RestoreBulkAction::make(),
                 ]),
             ]);
     }
 
+    public static function getEloquentQuery(): Builder
+{
+    return parent::getEloquentQuery()
+        ->withoutGlobalScopes([
+            SoftDeletingScope::class,
+        ]);
+}
     public static function getRelations(): array
     {
         return [

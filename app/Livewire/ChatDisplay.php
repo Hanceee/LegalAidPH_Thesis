@@ -7,12 +7,14 @@ use App\Models\Chat;
 use App\Models\User;
 use Livewire\Component;
 use Livewire\Redirector;
+use Illuminate\Http\File;
 use Filament\Tables\Table;
 use App\Models\ChatMessage;
 use Livewire\Attributes\Url;
 use OpenAI\Laravel\Facades\OpenAI;
 use Illuminate\Contracts\View\View;
 use App\Models\ChatbotConfiguration;
+use Filament\Support\Enums\MaxWidth;
 use Illuminate\Support\Facades\Http;
 use Filament\Forms\Contracts\HasForms;
 use Illuminate\Contracts\View\Factory;
@@ -27,10 +29,16 @@ class ChatDisplay extends Component implements HasForms, HasTable
 {
     use InteractsWithTable;
     use InteractsWithForms;
+    public $file;
+    public $transcribedText;
     public $audioPlayers = [];
+    public $errorMessage;
     public $messageContent;
+    public $audio;
     public array $messages = [];
     #[Url]
+    public $recording;
+    public $audioFile;
     public $chatID = null;
     public string $suggestedMessage1 = '';
     public string $suggestedMessage2 = '';
@@ -44,6 +52,8 @@ class ChatDisplay extends Component implements HasForms, HasTable
     public $editingChat = null; // New property to store the ID of the chat being edited
     public $editChatName = ''; // New property to store the edited chat name
     public $search = '';
+
+
 
     private function generateSuggestedMessages(): void
     {
@@ -207,7 +217,7 @@ public function searchChats()
     $this->chat->touch();
 
     // Send the user's message and chat history to the API
-    $response = Http::asJson()->post('http://127.0.0.1:5000/api/chat_with_history', [
+    $response = Http::timeout(60)->asJson()->post('http://127.0.0.1:5000/api/chat_with_history', [
         'query' => $this->newMessage,
         'chat_history' => $this->messages,
     ])->json();
@@ -392,8 +402,10 @@ private function createNewChat(): void
 // Livewire component
 
 
-public function readAloud($content, $index)
+public function readAloud($encodedContent, $index)
     {
+        $content = urldecode($encodedContent);
+
         if (!isset($this->audioPlayers[$index])) {
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
@@ -417,6 +429,31 @@ public function readAloud($content, $index)
             unset($this->audioPlayers[$index]);
         }
     }
+
+
+    public function updatedFile($file)
+    {
+        $this->validate([
+            'file' => 'required|file|mimes:mp3',
+        ]);
+
+        try {
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
+            ])->attach('file', file_get_contents($file->getRealPath()), $file->getClientOriginalName())
+            ->post('https://api.openai.com/v1/audio/transcriptions', [
+                'model' => 'whisper-1',
+                'response_format' => 'text',
+            ]);
+
+            $this->newMessage = $response->body();
+            $this->errorMessage = null;
+        } catch (\Exception $e) {
+            $this->newMessage = null;
+            $this->errorMessage = $e->getMessage();
+        }
+    }
+
 
 
 }

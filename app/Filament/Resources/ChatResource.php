@@ -18,12 +18,86 @@ use App\Filament\Resources\ChatResource\RelationManagers\ChatMessagesRelationMan
 
 class ChatResource extends Resource
 {
+
     protected static ?string $model = Chat::class;
 
     public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery()->where('is_archived', 0);
-    }
+{
+    $badWords = [
+        // English
+        'fuck',
+        'shit',
+        'asshole',
+        'bitch',
+        'bastard',
+        'damn',
+        'crap',
+        'cock',
+        'dick',
+        'pussy',
+        'whore',
+        'slut',
+        'cunt',
+        'motherfucker',
+        'twat',
+        'bollocks',
+        'arsehole',
+        'douchebag',
+        'wanker',
+        // Tagalog
+        'putangina',
+        'gago',
+        'tangina',
+        'buwisit',
+        'pakshet',
+        'ulol',
+        'lintik',
+        'hayop',
+        'tanga',
+        'sira-ulo',
+        'sutil',
+        'ungas',
+        'inutil',
+        'gunggong',
+        'gaga',
+        'bakla',
+        'bayot',
+        'bobo',
+        'hinayupak',
+        'ulupong',
+        'leche',
+        'hudas',
+        'tarantado',
+        'bwisit',
+        'bwiset',
+        'tae',
+        'uto-uto',
+        'yawa',
+        'demonyo',
+        'buang',
+        'amputa',
+        // Spanish (common in Tagalog slang)
+        'putamadre',
+        'hijo de puta',
+        'pucha',
+        'pakyu',
+        // Add more profanity words as needed
+    ];
+
+
+    return parent::getEloquentQuery()
+        ->where('is_archived', 0)
+        ->whereHas('chatMessages', function ($query) use ($badWords) {
+            $query->where(function ($q) use ($badWords) {
+                foreach ($badWords as $word) {
+                    $q->orWhere('content', 'REGEXP', '[[:<:]]' . $word . '[[:>:]]');
+                }
+            });
+        });
+}
+
+
+
 
     public static function canCreate(): bool
     {
@@ -78,7 +152,7 @@ class ChatResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\DeleteAction::make()->label("Warning and Delete"),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
