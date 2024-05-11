@@ -57,36 +57,39 @@ class ChatDisplay extends Component implements HasForms, HasTable
 
     private function generateSuggestedMessages(): void
     {
-        $prompts = [
-            "As the Chatbot User give a suggested message prompt to a Filipino family law lawyer chatbot named LegalAidPH in 20 words tagalog",
-            "As the Chatbot User give a suggested message prompt to a Filipino family law lawyer chatbot named LegalAidPH in 20 words",
-            "As the Chatbot User give a suggested message prompt to a Filipino family law lawyer chatbot named LegalAidPH in 20 words",
-            "As the Chatbot User give a suggested message prompt to a Filipino family law lawyer chatbot named LegalAidPH in 20 words in tagalog",
-        ];
+
+        // Fetch user's topic preference from the database
+    $user = auth()->user();
+    $topic = $user->topic;
+
+    $prompts = [
+        "As the Chatbot User give a tagalog suggested message prompt to a Filipino family law lawyer chatbot named LegalAidPH in 20 words pertaining $topic",
+        "As the Chatbot User give a suggested message prompt to a Filipino family law lawyer chatbot named LegalAidPH in 20 words involving $topic",
+        "As the Chatbot User give a suggested message prompt to a Filipino family law lawyer chatbot named LegalAidPH in 20 words related to $topic",
+        "As the Chatbot User give a tagalog suggested message prompt to a Filipino family law lawyer chatbot named LegalAidPH in 20 words with $topic",
+    ];
 
 
-        foreach ($prompts as $index => $prompt) {
-            $result = OpenAI::chat()->create([
-                'model' => 'gpt-4-turbo',
-                'messages' => [
-                    ['role' => 'user', 'content' => $prompt],
-                ],
-            ]);
+    foreach ($prompts as $index => $prompt) {
+        $result = OpenAI::chat()->create([
+            'model' => 'gpt-3.5-turbo',
+            'messages' => [
+                ['role' => 'user', 'content' => $prompt],
+            ],
+        ]);
 
             $suggestedMessage = $result['choices'][0]['message']['content'];
 
             $suggestedMessage = str_replace('"', '', $suggestedMessage);
 
 
-            // Assign generated message to the corresponding property
-            $propertyName = "suggestedMessage" . ($index + 1);
-            $this->{$propertyName} = $suggestedMessage;
+         // Assign generated message to the corresponding property in user table
+        $propertyName = "message" . ($index + 1);
+        $user->{$propertyName} = $suggestedMessage;
+    }
 
-               // Store suggested messages into chatbot_configurations table
-        $config = ChatbotConfiguration::firstOrCreate(['id' => 1]);
-        $config->{"message" . ($index + 1)} = $suggestedMessage;
-        $config->save();
-        }
+    /** @var \App\Models\User $user **/
+    $user->save();
 
     }
 
@@ -141,18 +144,14 @@ class ChatDisplay extends Component implements HasForms, HasTable
         if ($this->chatID) {
             $this->loadChat();
         }
-        // $this->generateSuggestedMessages();
-    // Generate suggested messages if they don't exist
-        $config = ChatbotConfiguration::firstOrCreate(['id' => 1]);
-        if (empty($config->message1) || empty($config->message2) || empty($config->message3) || empty($config->message4)) {
-            $this->generateSuggestedMessages();
-        }
+        $this->generateSuggestedMessages();
 
-        // Fetch suggested messages from the database and assign them to public properties
-        $this->suggestedMessage1 = $config->message1;
-        $this->suggestedMessage2 = $config->message2;
-        $this->suggestedMessage3 = $config->message3;
-        $this->suggestedMessage4 = $config->message4;
+     // Fetch suggested messages from the database and assign them to public properties
+    $this->suggestedMessage1 = auth()->user()->message1;
+    $this->suggestedMessage2 = auth()->user()->message2;
+    $this->suggestedMessage3 = auth()->user()->message3;
+    $this->suggestedMessage4 = auth()->user()->message4;
+
 
 
     }
