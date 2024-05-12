@@ -144,7 +144,7 @@ class ChatDisplay extends Component implements HasForms, HasTable
         if ($this->chatID) {
             $this->loadChat();
         }
-        $this->generateSuggestedMessages();
+        // $this->generateSuggestedMessages();
 
      // Fetch suggested messages from the database and assign them to public properties
     $this->suggestedMessage1 = auth()->user()->message1;

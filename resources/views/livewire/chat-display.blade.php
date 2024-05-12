@@ -80,7 +80,7 @@
     }
 </style>
 
-<div class="overflow-y-auto max-h-[calc(100vh-400px)] chat-list-container">
+<div class="overflow-y-auto max-h-[calc(100vh-600px)] sm:max-h-[calc(100vh-400px)] chat-list-container">
     <div class="py-4"></div> <!-- Extra space at the top -->    @foreach($sortedChats as $chat)
 
     @php
@@ -173,11 +173,14 @@
     <div class="mb-8 pb-1">
         <button wire:click="toggleFirstColumn" class="mt-4 hover:bg-gray-400 dark:hover:bg-gray-800 text-gray-800 dark:text-white font-bold py-2 px-4 rounded">
             @if($showFirstColumn)
-                <
+                <span class="hidden sm:inline">&lt;</span> <!-- Hide the arrow on small screens -->
+                <span class="sm:hidden">Hide Chats</span> <!-- Show "Hide Chats" on small screens -->
             @else
-                >
+                <span class="hidden sm:inline">&gt;</span> <!-- Hide the arrow on small screens -->
+                <span class="sm:hidden">Show Chats</span> <!-- Show "Show Chats" on small screens -->
             @endif
         </button>
+
         <h1 class="text-3xl font-bold dark:text-white">
             @if($chatID)
             {{ $chats->firstWhere('id', $chatID)->name ?? 'Chat Not Found' }}
@@ -190,10 +193,10 @@
         <div class="mb-8"></div>
 
         <!-- Display messages -->
-        <div class="overflow-y-auto max-h-[calc(100vh-400px)] chat-list-container">
+        <div class="text-sm sm:text-base overflow-y-auto max-h-[calc(100vh-400px)] chat-list-container">
             @forelse($messages as $key => $message)
             <!-- Chat message item -->
-            <div class="last-of-type:border-none py-4 flex items-right">
+            <div class=" last-of-type:border-none py-4 flex items-right">
                 <!-- Sender's avatar -->
                 @if($message['sender'] === 'LegalAidPH')
                     <img src="{{ asset('chat.png') }}" alt="LegalAidPH Logo" class="w-8 h-8 rounded-full mr-4">
@@ -256,13 +259,13 @@
      <!-- Check if there are messages displayed -->
      @if (empty($messages))
      <!-- Grid layout for suggested messages with 4 boxes -->
-<div class="grid grid-cols-2 gap-4 mb-4">
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
 @for ($i = 1; $i <= 4; $i++)
     <!-- Suggested Message Box {{ $i }} -->
     <div class="relative border border-gray-300 dark:border-gray-600 p-4 rounded-md opacity-90 hover:bg-gray-200 dark:hover:bg-gray-700 flex flex-col justify-between" onmouseover="toggleSubmitButton(this, true)" onmouseout="toggleSubmitButton(this, false)">
         <div>
-            <p class="text-sm text-gray-600 dark:text-gray-400">Suggested Message:</p>
-            <p class="text-base text-gray-800 dark:text-gray-300">{{ ${"suggestedMessage$i"} }}</p>
+            <p class="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Suggested Message:</p>
+                    <p class="text-sm sm:text-base text-gray-800 dark:text-gray-300">{{ ${"suggestedMessage$i"} }}</p>
         </div>
             <!-- Submit Button Icon -->
         <button class="absolute top-1/2 transform -translate-y-1/2 right-2 bg-gray-300 dark:bg-gray-700 rounded-lg p-2 text-gray-800 dark:text-gray-200 hover:bg-gray-400 dark:hover:bg-gray-600 submit-button hidden" onclick="sendMessageFromSuggestion('{{ ${"suggestedMessage$i"} }}')">

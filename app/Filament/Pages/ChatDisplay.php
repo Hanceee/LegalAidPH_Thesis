@@ -2,34 +2,75 @@
 
 namespace App\Filament\Pages;
 
+use Exception;
 use App\Models\Chat;
 use App\Models\User;
+use Filament\Forms\Form;
 use Filament\Pages\Page;
 use Filament\Tables\Table;
+use App\Services\GPTEngine;
+use Livewire\Attributes\On;
 use Filament\Actions\Action;
 use Filament\Pages\Dashboard;
 use Filament\Facades\Filament;
+use function PHPSTORM_META\map;
 use Filament\Actions\ActionGroup;
 use Filament\Forms\Components\Select;
 use Filament\Support\Enums\ActionSize;
-use App\Filament\Resources\ArchiveResource;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
-use Filament\Tables\Columns\TextColumn;
 
-use function PHPSTORM_META\map;
+use Filament\Forms\Components\Textarea;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\TextInput;
+use App\Filament\Resources\ArchiveResource;
+use Filament\Forms\Concerns\InteractsWithForms;
 
 class ChatDisplay extends Page
 {
+    use InteractsWithForms;
 
 
-
+    public ?array $data = [];
+    public bool $waitingForResponse = false;
+    public string $reply = '';
+    public string $lastQuestion = '';
     protected static ?string $navigationIcon = 'heroicon-o-chat-bubble-bottom-center-text';
     protected static ?string $navigationLabel = 'LegalAidPH Chat';
     protected ?string $heading = 'Chat Display';
     protected static string $view = 'filament.pages.chat-display';
 
+    public function form(Form $form): Form
+    {
+        return $form
+            ->schema([
+                Textarea::make('message')
+                    ->required()
+            ])
+            ->statePath('data');
+    }
+
+    public function create(): void
+    {
+        $this->reply = '';
+        $this->waitingForResponse = true;
+        $message = $this->form->getState()['message'];
+        $this->data['message'] = '';
+
+        $this->dispatch('queryAI', $message);
+    }
+
+    #[On('queryAI')]
+    public function queryAI($message)
+    {
+        try {
+            $this->reply = (new GPTEngine())->ask($message);
+        } catch (Exception $e) {
+            info($e->getMessage());
+            $this->reply = 'Sorry, the AI assistant was unable to answer your question. Please try to rephrase your question.';
+            $this->data['message'] = $this->lastQuestion;
+        }
+        $this->lastQuestion = $message;
+        $this->waitingForResponse = false;
+    }
 
     protected function getHeaderActions(): array
 {
