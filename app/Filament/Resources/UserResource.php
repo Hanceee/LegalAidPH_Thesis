@@ -12,6 +12,9 @@ use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Illuminate\Support\Facades\Hash;
 use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
+use Filament\Tables\Actions\ActionGroup;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
@@ -21,7 +24,6 @@ use App\Filament\Resources\UserResource\Pages\EditUser;
 use App\Filament\Resources\UserResource\Pages\CreateUser;
 use App\Filament\Resources\UserResource\RelationManagers;
 use App\Filament\Resources\UserResource\RelationManagers\UserRelationManager;
-use Filament\Forms\Components\TextInput;
 
 class UserResource extends Resource
 {
@@ -108,6 +110,10 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('chats_count')
                     ->counts('chats')
                     ->searchable(),
+                    Tables\Columns\TextColumn::make('notifications_count')
+                    ->counts('notifications')
+                    ->searchable()
+                    ->label("Warning Count"),
                 Tables\Columns\TextColumn::make('email_verified_at')
                     ->dateTime()
                     ->sortable()
@@ -123,26 +129,46 @@ class UserResource extends Resource
 
                 Tables\Columns\IconColumn::make('is_admin')
                     ->boolean(),
-
+                Tables\Columns\TextColumn::make('deleted_at')
+                    ->label("Blocked at")
+                    ->placeholder('Not Blocked/Restricted.')
 
 
             ])
             ->filters([
-                Tables\Filters\TrashedFilter::make(),
+                Tables\Filters\TrashedFilter::make()->label("Blocked Accounts")->default('onlyTrashed')
+                ,
 
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
-                Tables\Actions\ForceDeleteAction::make(),
-            Tables\Actions\RestoreAction::make(),
+                ActionGroup::make([
+                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\DeleteAction::make()
+                    ->modalHeading('Block/Restrict User')
+                    ->modalDescription('Are you sure you\'d like to block/restrict this user? This cannot be undone.')
+                    ->modalSubmitActionLabel('Yes')
+                    ->label("Block/Restrict")
+                    ->successNotification(
+                        Notification::make()
+                             ->success()
+                             ->title('User Blocked/Restricted')
+                             ->body('The user has been blocked/restricted successfully.'),
+                     ),
+                    Tables\Actions\ForceDeleteAction::make()->label("Delete Account"),
+                Tables\Actions\RestoreAction::make(),
+                ]),
+
+
+
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                    Tables\Actions\ForceDeleteBulkAction::make(),
-                Tables\Actions\RestoreBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                    ->label("Block/Restrict selected")
+                    ->modalHeading('Block/Restrict User')
+                    ->modalDescription('Are you sure you\'d like to block/restrict this user? This cannot be undone.')
+                    ->modalSubmitActionLabel('Yes'),
                 ]),
             ]);
     }

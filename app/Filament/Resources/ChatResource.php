@@ -18,71 +18,70 @@ use App\Filament\Resources\ChatResource\RelationManagers\ChatMessagesRelationMan
 
 class ChatResource extends Resource
 {
-
     protected static ?string $model = Chat::class;
 
     public static function getEloquentQuery(): Builder
 {
     $badWords = [
-        // English
-        'fuck',
-        'shit',
-        'asshole',
-        'bitch',
-        'bastard',
-        'damn',
-        'crap',
-        'cock',
-        'dick',
-        'pussy',
-        'whore',
-        'slut',
-        'cunt',
-        'motherfucker',
-        'twat',
-        'bollocks',
-        'arsehole',
-        'douchebag',
-        'wanker',
-        // Tagalog
-        'putangina',
-        'gago',
-        'tangina',
-        'buwisit',
-        'pakshet',
-        'ulol',
-        'lintik',
-        'hayop',
-        'tanga',
-        'sira-ulo',
-        'sutil',
-        'ungas',
-        'inutil',
-        'gunggong',
-        'gaga',
-        'bakla',
-        'bayot',
-        'bobo',
-        'hinayupak',
-        'ulupong',
-        'leche',
-        'hudas',
-        'tarantado',
-        'bwisit',
-        'bwiset',
-        'tae',
-        'uto-uto',
-        'yawa',
-        'demonyo',
-        'buang',
-        'amputa',
-        // Spanish (common in Tagalog slang)
-        'putamadre',
-        'hijo de puta',
-        'pucha',
-        'pakyu',
-        // Add more profanity words as needed
-    ];
+    // English
+    'fuck',
+    'shit',
+    'asshole',
+    'bitch',
+    'bastard',
+    'damn',
+    'crap',
+    'cock',
+    'dick',
+    'pussy',
+    'whore',
+    'slut',
+    'cunt',
+    'motherfucker',
+    'twat',
+    'bollocks',
+    'arsehole',
+    'douchebag',
+    'wanker',
+    // Tagalog
+    'putangina',
+    'gago',
+    'tangina',
+    'buwisit',
+    'pakshet',
+    'ulol',
+    'lintik',
+    'hayop',
+    'tanga',
+    'sira-ulo',
+    'sutil',
+    'ungas',
+    'inutil',
+    'gunggong',
+    'gaga',
+    'bakla',
+    'bayot',
+    'bobo',
+    'hinayupak',
+    'ulupong',
+    'leche',
+    'hudas',
+    'tarantado',
+    'bwisit',
+    'bwiset',
+    'tae',
+    'uto-uto',
+    'yawa',
+    'demonyo',
+    'buang',
+    'amputa',
+    // Spanish (common in Tagalog slang)
+    'putamadre',
+    'hijo de puta',
+    'pucha',
+    'pakyu',
+    // Add more profanity words as needed
+];
 
 
     return parent::getEloquentQuery()
@@ -152,7 +151,7 @@ class ChatResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\DeleteAction::make()->label("Warning and Delete"),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

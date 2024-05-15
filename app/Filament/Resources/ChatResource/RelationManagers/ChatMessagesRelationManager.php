@@ -3,16 +3,21 @@
 namespace App\Filament\Resources\ChatResource\RelationManagers;
 
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Models\ChatMessage;
+use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Resources\RelationManagers\RelationManager;
 
 class ChatMessagesRelationManager extends RelationManager
 {
+    protected static ?string $model = ChatMessage::class;
+
     protected static string $relationship = 'chatMessages';
+
 
     public function form(Form $form): Form
     {
@@ -35,7 +40,18 @@ class ChatMessagesRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('sender'),
                 Tables\Columns\TextColumn::make('content')
                 ->markdown()
-                ->wrap(),
+                ->wrap()
+                ->limit(50)
+    ->tooltip(function (TextColumn $column): ?string {
+        $state = $column->getState();
+
+        if (strlen($state) <= $column->getCharacterLimit()) {
+            return null;
+        }
+
+        // Only render the tooltip if the column content exceeds the length limit.
+        return $state;
+    }),
 
             ])
             ->filters([

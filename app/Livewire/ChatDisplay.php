@@ -216,7 +216,7 @@ public function searchChats()
     $this->chat->touch();
 
     // Send the user's message and chat history to the API
-    $response = Http::timeout(60)->asJson()->post('http://127.0.0.1:5000/api/chat_with_history', [
+    $response = Http::timeout(60)->asJson()->post('https://python-chatbot-flask-api.onrender.com/api/chat_with_history', [
         'query' => $this->newMessage,
         'chat_history' => $this->messages,
     ])->json();
@@ -279,7 +279,6 @@ public function startNewChat(): void
 {
     $this->chatID = null;
     $this->messages = [];
-    $this->audioPlayers = [];
 
 }
 
@@ -409,8 +408,8 @@ public function readAloud($encodedContent, $index)
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
                 'Content-Type' => 'application/json',
-            ])->post('https://api.openai.com/v1/audio/speech', [
-                'model' => 'tts-1-hd',
+                ])->timeout(120)->post('https://api.openai.com/v1/audio/speech', [
+                    'model' => 'tts-1',
                 'input' => $content,
                 'voice' => 'onyx',
             ]);
@@ -433,7 +432,7 @@ public function readAloud($encodedContent, $index)
     public function updatedFile($file)
     {
         $this->validate([
-            'file' => 'required|file|mimes:mp3',
+            'file' => 'required|file|mimes:webm',
         ]);
 
         try {

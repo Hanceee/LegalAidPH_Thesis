@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c37a3dd0d54f31a2b3cf0a779f9f5214",
+    "content-hash": "62cd381d763b85b587a9611572689e13",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -5620,6 +5620,78 @@
             "time": "2023-11-08T05:53:05+00:00"
         },
         {
+            "name": "rickdbcn/filament-email",
+            "version": "v1.4.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/RickDBCN/filament-email.git",
+                "reference": "657f9f6a1ba7d0db09661fd6f0b62fd16b9b34de"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/RickDBCN/filament-email/zipball/657f9f6a1ba7d0db09661fd6f0b62fd16b9b34de",
+                "reference": "657f9f6a1ba7d0db09661fd6f0b62fd16b9b34de",
+                "shasum": ""
+            },
+            "require": {
+                "filament/filament": "^3.0",
+                "illuminate/contracts": "^10.0|^11.0",
+                "laravel/framework": "^10.0|^11.0",
+                "php": "^8.1",
+                "spatie/laravel-package-tools": "^1.14.0"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.0",
+                "nunomaduro/collision": "^7.9|^8.0",
+                "orchestra/testbench": "^8.0|^9.0",
+                "pestphp/pest": "^2.0",
+                "pestphp/pest-plugin-arch": "^2.0",
+                "pestphp/pest-plugin-laravel": "^2.0",
+                "pestphp/pest-plugin-livewire": "^2.1"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "RickDBCN\\FilamentEmail\\FilamentEmailServiceProvider"
+                    ],
+                    "aliases": {
+                        "FilamentEmail": "RickDBCN\\FilamentEmail\\Facades\\FilamentEmail"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "RickDBCN\\FilamentEmail\\": "src/",
+                    "RickDBCN\\FilamentEmail\\Database\\Factories\\": "database/factories/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Rick de Boer",
+                    "email": "rickdb@calvintijd.nl",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Log all outbound emails you send through your Filament application",
+            "homepage": "https://github.com/rickdbcn/filament-email",
+            "keywords": [
+                "RickDBCN",
+                "filament-email",
+                "laravel",
+                "marcogermani87"
+            ],
+            "support": {
+                "issues": "https://github.com/RickDBCN/filament-email/issues",
+                "source": "https://github.com/RickDBCN/filament-email/tree/v1.4.2"
+            },
+            "time": "2024-05-13T20:25:32+00:00"
+        },
+        {
             "name": "ryangjchandler/blade-capture-directive",
             "version": "v1.0.0",
             "source": {
@@ -8461,6 +8533,62 @@
                 }
             ],
             "time": "2022-03-08T17:03:00+00:00"
+        },
+        {
+            "name": "webbingbrasil/filament-advancedfilter",
+            "version": "v3.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/webbingbrasil/filament-advancedfilter.git",
+                "reference": "3e2a249b92a0507703ae0443c4a46445cc12c06c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/webbingbrasil/filament-advancedfilter/zipball/3e2a249b92a0507703ae0443c4a46445cc12c06c",
+                "reference": "3e2a249b92a0507703ae0443c4a46445cc12c06c",
+                "shasum": ""
+            },
+            "require": {
+                "filament/filament": "^3.0.0",
+                "php": "^8.0",
+                "spatie/laravel-package-tools": "^1.9.2"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Webbingbrasil\\FilamentAdvancedFilter\\FilamentAdvancedFilterProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Webbingbrasil\\FilamentAdvancedFilter\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Danilo Andrade",
+                    "email": "danilo@webbingbrasil.com.br",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Advanced filter component for filament admin.",
+            "homepage": "https://github.com/webbingbrasil/filament-advancedfilter",
+            "keywords": [
+                "filament",
+                "filter",
+                "laravel"
+            ],
+            "support": {
+                "issues": "https://github.com/webbingbrasil/filament-advancedfilter/issues",
+                "source": "https://github.com/webbingbrasil/filament-advancedfilter/tree/v3.0.1"
+            },
+            "time": "2024-01-02T12:04:04+00:00"
         },
         {
             "name": "webmozart/assert",

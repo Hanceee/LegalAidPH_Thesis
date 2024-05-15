@@ -18,6 +18,7 @@ use App\Filament\Pages\Auth\Register;
 use Filament\Navigation\NavigationItem;
 use App\Filament\Pages\Auth\EditProfile;
 use App\Filament\Pages\HomePage;
+use App\Filament\Pages\LawyerRecommender;
 use App\Filament\Resources\ChatbotConfigurationResource;
 use App\Filament\Resources\ChatResource;
 use App\Filament\Resources\UserResource;
@@ -50,6 +51,9 @@ class AdminPanelProvider extends PanelProvider
     {
 
         return $panel
+        ->favicon(asset('chat.png'))
+
+
         ->userMenuItems([
             'profile' => MenuItem::make()->label('Edit profile'),
             'logout' => MenuItem::make()->label('Log out'),
@@ -63,6 +67,7 @@ class AdminPanelProvider extends PanelProvider
 
                         ...HomePage::getNavigationItems(),
                         ...ChatDisplay::getNavigationItems(),
+                        ...LawyerRecommender::getNavigationItems(),
 
                     ])
                     ->groups([
@@ -128,8 +133,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
-                Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
+
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -151,7 +155,8 @@ class AdminPanelProvider extends PanelProvider
                 Authenticate::class,
             ]);
 
-            Filament::adminPanel()->viteTheme('resources/css/filament/admin/theme.css');
+            Filament::adminPanel()->viteTheme('resources/css/filament/admin/theme.css')
+            ;
 
     }
 }

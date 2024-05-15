@@ -193,7 +193,7 @@
         <div class="mb-8"></div>
 
         <!-- Display messages -->
-        <div class="text-sm sm:text-base overflow-y-auto max-h-[calc(100vh-400px)] chat-list-container">
+        <div class="text-sm sm:text-base overflow-y-auto  max-h-[calc(100vh-500px)] sm:max-h-[calc(100vh-400px)]  chat-list-container">
             @forelse($messages as $key => $message)
             <!-- Chat message item -->
             <div class=" last-of-type:border-none py-4 flex items-right">
@@ -220,20 +220,80 @@
                         {!! nl2br(e($message['content'])) !!}
                     </p>
 
-                    <!-- Read Aloud button with megaphone icon -->
-                    @if($message['sender'] === 'LegalAidPH')
-                    <button wire:click="readAloud('{{ urlencode($message['content']) }}', {{ $key }})" class="text-sm text-blue-500 hover:underline" id="readAloudButton">
-                        @if(isset($audioPlayers[$key]))
-                        <svg width="15" height="15" class="icon-md-heavy" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                        @else
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-md-heavy">
-                            <path fill-rule="evenodd" clip-rule="evenodd" d="M11 4.9099C11 4.47485 10.4828 4.24734 10.1621 4.54132L6.67572 7.7372C6.49129 7.90626 6.25019 8.00005 6 8.00005H4C3.44772 8.00005 3 8.44776 3 9.00005V15C3 15.5523 3.44772 16 4 16H6C6.25019 16 6.49129 16.0938 6.67572 16.2629L10.1621 19.4588C10.4828 19.7527 11 19.5252 11 19.0902V4.9099ZM8.81069 3.06701C10.4142 1.59714 13 2.73463 13 4.9099V19.0902C13 21.2655 10.4142 22.403 8.81069 20.9331L5.61102 18H4C2.34315 18 1 16.6569 1 15V9.00005C1 7.34319 2.34315 6.00005 4 6.00005H5.61102L8.81069 3.06701ZM20.3166 6.35665C20.8019 6.09313 21.409 6.27296 21.6725 6.75833C22.5191 8.3176 22.9996 10.1042 22.9996 12.0001C22.9996 13.8507 22.5418 15.5974 21.7323 17.1302C21.4744 17.6185 20.8695 17.8054 20.3811 17.5475C19.8927 17.2896 19.7059 16.6846 19.9638 16.1962C20.6249 14.9444 20.9996 13.5175 20.9996 12.0001C20.9996 10.4458 20.6064 8.98627 19.9149 7.71262C19.6514 7.22726 19.8312 6.62017 20.3166 6.35665ZM15.7994 7.90049C16.241 7.5688 16.8679 7.65789 17.1995 8.09947C18.0156 9.18593 18.4996 10.5379 18.4996 12.0001C18.4996 13.3127 18.1094 14.5372 17.4385 15.5604C17.1357 16.0222 16.5158 16.1511 16.0539 15.8483C15.5921 15.5455 15.4632 14.9255 15.766 14.4637C16.2298 13.7564 16.4996 12.9113 16.4996 12.0001C16.4996 10.9859 16.1653 10.0526 15.6004 9.30063C15.2687 8.85905 15.3578 8.23218 15.7994 7.90049Z" fill="currentColor"></path>
-                        </svg>
-                        @endif
-                    </button>
-                    @endif
+                   <!-- Read Aloud button with megaphone icon -->
+@if($message['sender'] === 'LegalAidPH')
+<button wire:click="readAloud('{{ urlencode($message['content']) }}', {{ $key }})" class="text-sm text-blue-500 hover:underline" id="readAloudButton">
+        @if(isset($audioPlayers[$key]))
+            <svg width="15" height="15" class="icon-md-heavy" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        @else
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-md-heavy">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M11 4.9099C11 4.47485 10.4828 4.24734 10.1621 4.54132L6.67572 7.7372C6.49129 7.90626 6.25019 8.00005 6 8.00005H4C3.44772 8.00005 3 8.44776 3 9.00005V15C3 15.5523 3.44772 16 4 16H6C6.25019 16 6.49129 16.0938 6.67572 16.2629L10.1621 19.4588C10.4828 19.7527 11 19.5252 11 19.0902V4.9099ZM8.81069 3.06701C10.4142 1.59714 13 2.73463 13 4.9099V19.0902C13 21.2655 10.4142 22.403 8.81069 20.9331L5.61102 18H4C2.34315 18 1 16.6569 1 15V9.00005C1 7.34319 2.34315 6.00005 4 6.00005H5.61102L8.81069 3.06701ZM20.3166 6.35665C20.8019 6.09313 21.409 6.27296 21.6725 6.75833C22.5191 8.3176 22.9996 10.1042 22.9996 12.0001C22.9996 13.8507 22.5418 15.5974 21.7323 17.1302C21.4744 17.6185 20.8695 17.8054 20.3811 17.5475C19.8927 17.2896 19.7059 16.6846 19.9638 16.1962C20.6249 14.9444 20.9996 13.5175 20.9996 12.0001C20.9996 10.4458 20.6064 8.98627 19.9149 7.71262C19.6514 7.22726 19.8312 6.62017 20.3166 6.35665ZM15.7994 7.90049C16.241 7.5688 16.8679 7.65789 17.1995 8.09947C18.0156 9.18593 18.4996 10.5379 18.4996 12.0001C18.4996 13.3127 18.1094 14.5372 17.4385 15.5604C17.1357 16.0222 16.5158 16.1511 16.0539 15.8483C15.5921 15.5455 15.4632 14.9255 15.766 14.4637C16.2298 13.7564 16.4996 12.9113 16.4996 12.0001C16.4996 10.9859 16.1653 10.0526 15.6004 9.30063C15.2687 8.85905 15.3578 8.23218 15.7994 7.90049Z" fill="currentColor"></path>
+            </svg>
+        @endif
+    </button>
+@endif
+
+{{-- <script>
+    document.getElementById('readAloudButton').addEventListener('click', function() {
+        // Replace button content with loading icon
+        document.getElementById('readAloudButton').innerHTML = `
+            <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" class="animate-spin text-center icon-md-heavy" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                <line x1="12" y1="2" x2="12" y2="6"></line>
+                <line x1="12" y1="18" x2="12" y2="22"></line>
+                <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line>
+                <line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line>
+                <line x1="2" y1="12" x2="6" y2="12"></line>
+                <line x1="18" y1="12" x2="22" y2="12"></line>
+                <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line>
+                <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
+            </svg>`;
+    });
+</script> --}}
+
+
+
+
+        @if($message['sender'] === auth()->user()->name && $key === count($messages) - 2)
+            <!-- Edit button for user message -->
+            <button wire:click="editLatestUserMessage({{ $message['id'] }})" class="text-sm text-blue-500 hover:underline">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-md-heavy"><path fill-rule="evenodd" clip-rule="evenodd" d="M13.2929 4.29291C15.0641 2.52167 17.9359 2.52167 19.7071 4.2929C21.4783 6.06414 21.4783 8.93588 19.7071 10.7071L18.7073 11.7069L11.1603 19.2539C10.7182 19.696 10.1489 19.989 9.53219 20.0918L4.1644 20.9864C3.84584 21.0395 3.52125 20.9355 3.29289 20.7071C3.06453 20.4788 2.96051 20.1542 3.0136 19.8356L3.90824 14.4678C4.01103 13.8511 4.30396 13.2818 4.7461 12.8397L13.2929 4.29291ZM13 7.41422L6.16031 14.2539C6.01293 14.4013 5.91529 14.591 5.88102 14.7966L5.21655 18.7835L9.20339 18.119C9.40898 18.0847 9.59872 17.9871 9.7461 17.8397L16.5858 11L13 7.41422ZM18 9.5858L14.4142 6.00001L14.7071 5.70712C15.6973 4.71693 17.3027 4.71693 18.2929 5.70712C19.2831 6.69731 19.2831 8.30272 18.2929 9.29291L18 9.5858Z" fill="currentColor"></path></svg>
+            </button>
+        @elseif($message['sender'] === 'LegalAidPH' && $key === count($messages) - 1)
+
+        <!-- Regenerate button for chatbot message -->
+<button wire:click="regenerateLatestBotMessage({{ $message['id'] }})" wire:loading.attr="disabled" class="text-sm text-blue-500 hover:underline relative" id="regenerateButton">
+    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="none" viewBox="0 0 24 24" class="icon-md-heavy">
+        <path fill="currentColor" d="M3.07 10.876C3.623 6.436 7.41 3 12 3a9.15 9.15 0 0 1 6.012 2.254V4a1 1 0 1 1 2 0v4a1 1 0 0 1-1 1H15a1 1 0 1 1 0-2h1.957A7.15 7.15 0 0 0 12 5a7 7 0 0 0-6.946 6.124 1 1 0 1 1-1.984-.248m16.992 1.132a1 1 0 0 1 .868 1.116C20.377 17.564 16.59 21 12 21a9.15 9.15 0 0 1-6-2.244V20a1 1 0 1 1-2 0v-4a1 1 0 0 1 1-1h4a1 1 0 1 1 0 2H7.043A7.15 7.15 0 0 0 12 19a7 7 0 0 0 6.946-6.124 1 1 0 0 1 1.116-.868"></path>
+    </svg>
+    <span wire:loading wire:target="regenerateLatestBotMessage({{ $message['id'] }})">
+        <svg xmlns="http://www.w3.org/2000/svg" class="animate-spin h-5 w-5 text-blue-500 ml-2" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" width="15" height="15" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647zM20 12c0-3.042-1.135-5.824-3-7.938l-3 2.647A7.962 7.962 0 0120 12h4zm-6 7.291c1.865-2.114 3-4.896 3-7.938h-4c0 1.576-.5 3.041-1.347 4.245l2.347 2.693z"></path>
+        </svg>
+    </span>
+</button>
+
+{{-- <script>
+    document.getElementById('regenerateButton').addEventListener('click', function() {
+        // Replace button content with loading icon
+        document.getElementById('regenerateButton').innerHTML = `
+            <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" class="animate-spin text-center icon-md-heavy" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
+                <line x1="12" y1="2" x2="12" y2="6"></line>
+                <line x1="12" y1="18" x2="12" y2="22"></line>
+                <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line>
+                <line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line>
+                <line x1="2" y1="12" x2="6" y2="12"></line>
+                <line x1="18" y1="12" x2="22" y2="12"></line>
+                <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line>
+                <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
+            </svg>`;
+    });
+</script> --}}
+
+
+        @endif
 
                     <!-- Audio player -->
                     @if(isset($audioPlayers[$key]))
@@ -320,25 +380,104 @@
             </svg>
         </button>
 
+        <!-- Mic button -->
+        <button id="micButton"  type="button" class="absolute right-12 top-6 transform -translate-y-1/2 bg-blue-500 text-white rounded-lg p-2 dark:bg-blue-700 dark:text-white">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-mic-fill" viewBox="0 0 16 16">
+        <path d="M5 3a3 3 0 0 1 6 0v5a3 3 0 0 1-6 0z"/>
+        <path d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5"/>
+    </svg>
+</button>
+
     </form>
-
-    <div>
-        <input type="file" wire:model="file">
-
-        @if ($file)
-            <div class="mt-4">
-                @if ($errorMessage)
-                    <div class="alert alert-danger" role="alert">
-                        {{ $errorMessage }}
-                    </div>
-                @else
-
-                @endif
-            </div>
-        @endif
-    </div>
+    <input type="file" id="fileInput" wire:model="file" style="display: none;">
 
 
+    <script>
+        const micButton = document.getElementById('micButton');
+        const recordingTime = document.getElementById('recordingTime');
+        const fileInput = document.getElementById('fileInput');
+
+        let mediaRecorder;
+        let audioChunks = [];
+        let startTime;
+        let timerInterval;
+        let mediaStream;
+
+        micButton.addEventListener('click', async () => {
+            if (!mediaRecorder || mediaRecorder.state === 'inactive') {
+                startRecording();
+            } else {
+                stopRecording();
+            }
+        });
+
+        async function startRecording() {
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                try {
+                    mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    mediaRecorder = new MediaRecorder(mediaStream, { mimeType: 'audio/webm' });
+                    mediaRecorder.start();
+
+                    startTime = Date.now();
+                    timerInterval = setInterval(() => {
+                        const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+                        recordingTime.textContent = `Recording: ${elapsedTime}s`;
+                    }, 1000);
+
+                    micButton.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-stop-circle-fill" viewBox="0 0 16 16">
+                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M6.5 5A1.5 1.5 0 0 0 5 6.5v3A1.5 1.5 0 0 0 6.5 11h3A1.5 1.5 0 0 0 11 9.5v-3A1.5 1.5 0 0 0 9.5 5z"/>
+                        </svg>
+                    `;
+
+                    mediaRecorder.ondataavailable = event => {
+                        audioChunks.push(event.data);
+                    };
+                } catch (error) {
+                    console.error('Error accessing microphone:', error);
+                }
+            }
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+                clearInterval(timerInterval);
+
+                mediaRecorder.onstop = () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                    const audioFile = new File([audioBlob], 'recording.webm', { type: 'audio/webm' });
+
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(audioFile);
+                    fileInput.files = dataTransfer.files;
+ // Trigger the change event for Livewire
+ const event = new Event('change', { bubbles: true });
+                fileInput.dispatchEvent(event);
+                    stopMediaStream();
+                    resetRecordingUI();
+                    audioChunks = [];
+                };
+            }
+        }
+
+        function stopMediaStream() {
+            if (mediaStream) {
+                mediaStream.getTracks().forEach(track => track.stop());
+                mediaStream = null;
+            }
+        }
+
+        function resetRecordingUI() {
+            micButton.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-mic-fill" viewBox="0 0 16 16">
+                    <path d="M5 3a3 3 0 0 1 6 0v5a3 3 0 0 1-6 0z"/>
+                    <path d="M3.5 6.5A.5.5 0 0 1 4 7v1a4 4 0 0 0 8 0V7a.5.5 0 0 1 1 0v1a5 5 0 0 1-4.5 4.975V15h3a.5.5 0 0 1 0 1h-7a.5.5 0 0 1 0-1h3v-2.025A5 5 0 0 1 3 8V7a.5.5 0 0 1 .5-.5"/>
+                </svg>
+            `;
+            recordingTime.textContent = 'Recording: 0s';
+        }
+    </script>
 
     <script>
         const messageInput = document.getElementById('messageInput');

@@ -9,6 +9,6 @@ class Lawyers extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'contact', 'specializations', 'location', 'experience'];
+    protected $fillable = ['name', 'contact', 'specializations', 'location', 'experience', 'verified'];
 
 }

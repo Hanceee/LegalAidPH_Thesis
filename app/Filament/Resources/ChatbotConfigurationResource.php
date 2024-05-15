@@ -52,7 +52,7 @@ class ChatbotConfigurationResource extends Resource
 
                     ->helperText("Guides AI behavior, influencing context, tasks, or generation parameters"),
 
-                    Forms\Components\Textarea::make('txt_file')
+                    Forms\Components\Textarea::make('txt_file')->disabled()
                     ->label("Chatbot Data Source")
                     ->required()
                     ->columnSpanFull()
