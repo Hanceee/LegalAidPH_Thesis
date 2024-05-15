@@ -7,19 +7,18 @@ use Filament\Notifications\Notification;
 
 class ChatObserver
 {
-
     /**
      * Handle the Chat "deleted" event.
      */
     public function deleted(Chat $chat): void
     {
-
-        Notification::make()
-        ->title('Chat Deleted Notification!')
-        ->danger()
-        ->body('Your chat "' . $chat->name . '" has been deleted by the admin due to the use of profanity language. Please refrain from using inappropriate language in the future. Repeat offenses may result in a ban')
-        ->sendToDatabase($chat->user);
+        // Check if the user who deleted the chat is an admin
+        if ($chat->user->is_admin) {
+            Notification::make()
+                ->title('Chat Deleted Notification!')
+                ->danger()
+                ->body('Your chat "' . $chat->name . '" has been deleted by the admin due to the use of profanity language. Please refrain from using inappropriate language in the future. Repeat offenses may result in a ban')
+                ->sendToDatabase($chat->user);
+        }
     }
-
-
 }

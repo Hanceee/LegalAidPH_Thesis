@@ -8,7 +8,7 @@
 
         <div class="mb-8 text-center">
             <h1 class="text-3xl sm:text-4xl font-bold text-black dark:text-gray-200">
-                Legal assistance at your fingertips,<br> empowering you with knowledge and support.
+                Family Law Expertise at Your Fingertips,<br> Supporting Your Family's Legal Needs.
             </h1>
         </div>
 
@@ -18,7 +18,7 @@
 
         <!-- Video Player -->
         <div class="flex justify-center">
-            <video controlsList="nodownload" controls autoplay loop class="mt-4" width="640" height="360">
+            <video controlsList="nodownload" controls autoplay loop muted class="mt-4" width="640" height="360">
                 <source src="{{ asset('video.mp4') }}" type="video/mp4">
                 Your browser does not support the video tag.
             </video>
